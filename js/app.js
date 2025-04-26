@@ -69,6 +69,8 @@ function debounce(func, delay) {
   
       tasks.push(newTask);
       saveTasksToLocalStorage(tasks);
+      updateNoTasksMessage();
+
   
       taskInput.value = '';
     } else {
@@ -113,6 +115,7 @@ function debounce(func, delay) {
       });
   
       saveTasksToLocalStorage(tasks);
+      updateNoTasksMessage();
   
       // Toggle UI class
       taskItem.classList.toggle('completed');
@@ -130,6 +133,15 @@ function saveTasksToLocalStorage(tasks) {
     const tasks = localStorage.getItem('tasks');
     return tasks ? JSON.parse(tasks) : [];
   }
+
+  function updateNoTasksMessage() {
+    const noTasksMessage = document.getElementById('no-tasks');
+    if (tasks.length === 0) {
+      noTasksMessage.style.display = 'block';
+    } else {
+      noTasksMessage.style.display = 'none';
+    }
+  }
   
 
   // Load tasks from LocalStorage on page load
@@ -141,4 +153,4 @@ function loadTasks() {
   }
   
   loadTasks();
-  
+  updateNoTasksMessage();
