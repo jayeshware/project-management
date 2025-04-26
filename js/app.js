@@ -37,12 +37,15 @@ function debounce(func, delay) {
   
 
 
-function createTaskElement(taskText) {
+  function createTaskElement(task) {
     const taskItem = document.createElement('div');
     taskItem.classList.add('task-item');
+    if (task.completed) {
+      taskItem.classList.add('completed');
+    }
   
     const taskContent = document.createElement('span');
-    taskContent.textContent = taskText;
+    taskContent.textContent = task.text;
   
     const deleteBtn = document.createElement('button');
     deleteBtn.textContent = '❌';
@@ -54,16 +57,18 @@ function createTaskElement(taskText) {
     return taskItem;
   }
   
+  
 
   addTaskBtn.addEventListener('click', () => {
     const taskText = taskInput.value.trim();
     
     if (taskText !== '') {
-      const taskElement = createTaskElement(taskText);
+      const newTask = { text: taskText, completed: false };
+      const taskElement = createTaskElement(newTask);
       taskList.appendChild(taskElement);
   
-      tasks.push(taskText); // Add to array
-      saveTasksToLocalStorage(tasks); // Save updated array
+      tasks.push(newTask);
+      saveTasksToLocalStorage(tasks);
   
       taskInput.value = '';
     } else {
@@ -71,21 +76,49 @@ function createTaskElement(taskText) {
     }
   });
   
+  
   taskList.addEventListener('click', (event) => {
     if (event.target.classList.contains('delete-btn')) {
       const taskItem = event.target.parentElement;
       const taskText = taskItem.querySelector('span').textContent;
   
-      // Remove from array
-      tasks = tasks.filter(task => task !== taskText);
+      tasks = tasks.filter(task => task.text !== taskText);
       saveTasksToLocalStorage(tasks);
   
-      // Remove from UI
       taskList.removeChild(taskItem);
     }
   });
   
+  
 
+  taskList.addEventListener('click', (event) => {
+    if (event.target.classList.contains('delete-btn')) {
+      const taskItem = event.target.parentElement;
+      const taskText = taskItem.querySelector('span').textContent;
+  
+      tasks = tasks.filter(task => task.text !== taskText);
+      saveTasksToLocalStorage(tasks);
+  
+      taskList.removeChild(taskItem);
+    } else if (event.target.tagName === 'SPAN') {
+      const taskItem = event.target.parentElement;
+      const taskText = event.target.textContent;
+  
+      // Toggle completed status
+      tasks = tasks.map(task => {
+        if (task.text === taskText) {
+          return { ...task, completed: !task.completed };
+        }
+        return task;
+      });
+  
+      saveTasksToLocalStorage(tasks);
+  
+      // Toggle UI class
+      taskItem.classList.toggle('completed');
+    }
+  });
+  
 
   // Save tasks to LocalStorage
 function saveTasksToLocalStorage(tasks) {

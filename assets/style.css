@@ -66,5 +66,9 @@ body {
     font-size: 18px;
     cursor: pointer;
   }
-  
+
+  .completed span {
+    text-decoration: line-through;
+    color: green;
+  }
   
